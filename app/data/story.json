@@ -1,0 +1,35 @@
+{
+    
+  
+  "start": {
+      "text": "You enter a quiet museum.",
+      "choices": [
+        { "text": "Walk forward", "next": "room" },
+        { "text": "Leave", "next": "end" }
+      ]
+    },
+    
+      "room": {
+        "text": "You see a coworker crying in the breakroom. What do you do?",
+        "choices": [
+          { "text": "Offer a tissue and listen.", "next": "end", "trait": "Empathetic" },
+          { "text": "Give them space and walk away.", "next": "end", "trait": "Respectful" }
+        ]
+      },
+      
+    
+  
+    "room1": {
+      "text": "A stranger watches you.",
+      "choices": [
+        { "text": "Talk", "next": "end" }
+      ]
+    },
+  
+   "end": {
+        "text": "The day concludes, and you head home reflecting on your choices.",
+        "choices": [] 
+      }
+    }
+  
+  
