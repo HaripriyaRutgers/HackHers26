@@ -6,8 +6,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log("Incoming:", body);
-
     const { traits, name } = body;
 
     if (!traits || !name) {
@@ -17,41 +15,45 @@ export async function POST(req: Request) {
     // Count trait frequencies
     const traitCounts: Record<string, number> = {};
     traits.forEach((t: string) => { traitCounts[t] = (traitCounts[t] || 0) + 1; });
-    const topTraits = Object.entries(traitCounts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([t]) => t);
+    const sorted = Object.entries(traitCounts).sort((a, b) => b[1] - a[1]);
+    const topTraits = sorted.slice(0, 5).map(([t]) => t);
+    const dominantTrait = sorted[0]?.[0] || traits[0];
 
     const text = `
-You are a narrative psychologist for an interactive story game called "LIFE.EXE" where players make choices that reveal their decision-making patterns.
+You are a narrative psychologist for an interactive story game called "LIFE.EXE."
 
-The player's name is ${name}. They made ${traits.length} choices throughout the story, reflecting these traits (in order): ${traits.join(", ")}.
+Player name: ${name}
+All choices made (as traits): ${traits.join(", ")}
+Most frequent traits: ${topTraits.join(", ")}
+Single most dominant trait: ${dominantTrait}
 
-Their most frequent traits were: ${topTraits.join(", ")}.
-
-Generate a complete psychological profile as a JSON object with EXACTLY this structure (respond with ONLY the JSON, no markdown, no explanation):
+Generate a psychological profile as JSON. Respond with ONLY valid JSON, no markdown, no backticks, no explanation.
 
 {
-  "analysis": "A warm, flowing 3-4 sentence personal reflection addressed to ${name} about their dominant decision-making patterns and what this reveals about how they approach challenges and relationships. Make it feel insightful and specific to their choices.",
-  
+  "dominantWord": "ONE single evocative word (not a trait name) that captures their essence — something poetic and memorable like 'ARCHITECT' or 'WANDERER' or 'GUARDIAN' or 'EMBER' or 'CATALYST'. Make it feel like a character class or soul archetype. ALL CAPS.",
+
+  "analysis": "2-3 sentences max. Address ${name} directly. Be specific about their choices, warm but insightful. NOT a list. Flowing prose only. Start with their dominant word woven in naturally.",
+
   "archetype": {
-    "name": "A 2-3 word archetype title like 'The Compassionate Strategist' or 'The Bold Connector' — based on their actual traits",
-    "description": "2 sentences describing what this archetype means and how it shows up in real life. Be specific to their trait patterns."
+    "name": "2-3 word poetic archetype title like 'The Quiet Strategist' or 'The Brave Heart'",
+    "description": "One sentence describing this archetype in the real world."
   },
 
-  "topTraits": ["trait1", "trait2", "trait3"],
+  "topTraits": ["top3", "traits", "here"],
 
   "decisionStyle": {
-    "logic": <0-100 number based on how analytical/strategic their choices were>,
-    "emotion": <0-100 number based on how emotionally driven their choices were>,
-    "risk": <0-100 number based on how bold/risky their choices were>,
-    "caution": <0-100 number based on how careful/protective their choices were>,
-    "independence": <0-100 number based on how self-reliant their choices were>,
-    "collaboration": <0-100 number based on how connection-oriented their choices were>
+    "logic": <0-100, how analytical their choices were>,
+    "emotion": <0-100, how emotionally driven>,
+    "risk": <0-100, how bold/risky>,
+    "caution": <0-100, how protective/careful>,
+    "independence": <0-100, how self-reliant>,
+    "collaboration": <0-100, how connection-oriented>
   },
 
-  "insight": "One powerful, memorable sentence that captures the essence of who ${name} is as a decision-maker. Should feel like a fortune cookie crossed with therapy."
+  "insight": "One short, punchy, memorable sentence. Like a horoscope crossed with a game achievement unlock. Should feel earned."
 }
 
-Base ALL numbers and descriptions on the actual traits provided. Do not make generic responses.
-Traits provided: ${traits.join(", ")}
+Make dominantWord feel like unlocking a character class. Make analysis feel personal, not generic. Base ALL numbers on actual trait patterns.
 `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -62,23 +64,27 @@ Traits provided: ${traits.join(", ")}
 
     const raw = result.response.text();
 
-    // Try to parse as JSON, fall back to plain text analysis
     let profileData;
     try {
       const cleaned = raw.replace(/```json|```/g, "").trim();
       profileData = JSON.parse(cleaned);
     } catch {
-      // If JSON parsing fails, return plain analysis
       profileData = {
-        analysis: raw,
-        archetype: { name: "The Reflective Soul", description: "Someone who approaches life with thoughtfulness and depth." },
+        dominantWord: "SEEKER",
+        analysis: `${name}, your choices reveal someone who moves through the world with quiet intention. You don't just react — you observe, weigh, and then act with purpose that others rarely notice until it's already happened.`,
+        archetype: { name: "The Thoughtful One", description: "Someone who leads with reflection before action." },
         topTraits: topTraits.slice(0, 3),
-        decisionStyle: { logic: 60, emotion: 60, risk: 50, caution: 50, independence: 60, collaboration: 60 },
-        insight: "Your choices tell a story only you could write."
+        decisionStyle: { logic: 60, emotion: 60, risk: 50, caution: 55, independence: 60, collaboration: 55 },
+        insight: "You were never just playing a game. You were taking notes on yourself."
       };
     }
 
-    return NextResponse.json({ analysis: profileData.analysis, profile: profileData });
+    return NextResponse.json({
+      analysis: profileData.analysis,
+      dominantWord: profileData.dominantWord,
+      profile: profileData
+    });
+
   } catch (error) {
     console.error("API ERROR:", error);
     return NextResponse.json({ error: "Failed to analyze" }, { status: 500 });

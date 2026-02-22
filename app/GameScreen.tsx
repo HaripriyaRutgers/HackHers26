@@ -205,7 +205,7 @@ export default function GameScreen({
                       {i + 1}
                     </div>
                     <p className="flex-1 font-medium text-base" style={{ color: "#f0e8ff" }}>{choice.text}</p>
-                    <ChevronRight className="w-5 h-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "#FFB7CE" }} />
+                    <ChevronRight className="w-5 h-5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "#FFB7CE" }} />
                   </div>
                 </button>
               ))}

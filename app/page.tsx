@@ -1,5 +1,14 @@
 "use client";
 
+import Vortex from "@/Components/Vortex";
+import GlitchTitle      from "@/Components/GlitchTitle";
+import TypewriterCycler from "@/Components/Typewritercycler";
+import PulseButton      from "@/Components/Pulsebutton";
+import FlipCard         from "@/Components/Flipcard";
+import FluidCursor      from "@/Components/FluidCursor";
+import GlowDotCursor    from "@/Components/GlowDot";
+import LifeBar          from "@/Components/LifeBar";
+
 import { useState, useEffect } from "react";
 import {
   Sparkles, BookOpen, Heart, Users, ActivitySquare,
@@ -63,10 +72,10 @@ const storyDataByTheme: Record<string, any[]> = {
 };
 
 const themes = [
-  { id: "academics", title: "The Semester Begins",      subtitle: "Academics",   description: "Navigate exams, projects, and career choices",         Icon: BookOpen,       chapter: 1 },
-  { id: "love",      title: "Unexpected Connections",   subtitle: "Love Life",   description: "Explore connections, heartbreak, and self-discovery",   Icon: Heart,          chapter: 2 },
-  { id: "family",    title: "Voices From Home",         subtitle: "Family Life", description: "Balance expectations, relationships, and independence", Icon: Users,          chapter: 3 },
-  { id: "health",    title: "Reality Check",            subtitle: "Health",      description: "Face challenges of mental wellness and self-care",      Icon: ActivitySquare, chapter: 4 },
+  { id: "academics", title: "The Semester Begins",    subtitle: "Academics",   description: "Navigate exams, projects, and career choices",         Icon: BookOpen,       chapter: 1 },
+  { id: "love",      title: "Unexpected Connections", subtitle: "Love Life",   description: "Explore connections, heartbreak, and self-discovery",   Icon: Heart,          chapter: 2 },
+  { id: "family",    title: "Voices From Home",       subtitle: "Family Life", description: "Balance expectations, relationships, and independence", Icon: Users,          chapter: 3 },
+  { id: "health",    title: "Reality Check",          subtitle: "Health",      description: "Face challenges of mental wellness and self-care",      Icon: ActivitySquare, chapter: 4 },
 ];
 
 /* ══════════════════════════════════════════
@@ -90,26 +99,55 @@ const BG = "radial-gradient(ellipse at 60% 40%, #2d1f3f 0%, #0f0a1a 60%, #0a0612
 ══════════════════════════════════════════ */
 function Navbar({ activeTab, setTab }: { activeTab: Tab; setTab: (t: Tab) => void }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4"
-      style={{ backgroundColor: "rgba(15,10,26,0.92)", borderBottom: "1px solid rgba(160,233,255,0.12)", backdropFilter: "blur(16px)" }}>
-      <button onClick={() => setTab("home")} className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black"
-          style={{ background: "linear-gradient(135deg, #A0E9FF, #B19CD9)", color: "#0a0612" }}>FOM</div>
-        <span className="font-black tracking-widest text-lg" style={{ color: "#A0E9FF", fontFamily: "Georgia, serif" }}>LIFE.EXE</span>
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4"
+      style={{
+        backgroundColor: "rgba(5,3,12,0.7)",
+        borderBottom: "1px solid rgba(160,233,255,0.08)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+      }}
+    >
+      <button
+        onClick={() => setTab("home")}
+        style={{ background: "none", border: "none", padding: 0 }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 800,
+            fontSize: "1.35rem",
+            letterSpacing: "0.18em",
+            background: "linear-gradient(90deg, #A0E9FF 0%, #c4b5fd 50%, #FFB7CE 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
+          MindQuest
+        </span>
       </button>
-      <div className="flex items-center gap-2">
+
+      <div className="flex items-center gap-1">
         {([
-          { id: "home" as Tab,     label: "Home",     Icon: HomeIcon },
-          { id: "chapters" as Tab, label: "Chapters", Icon: Library },
-          { id: "profile" as Tab,  label: "Profile",  Icon: User },
-        ]).map(({ id, label, Icon }) => (
-          <button key={id} onClick={() => setTab(id)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+          { id: "home"     as Tab, label: "Home"     },
+          { id: "chapters" as Tab, label: "Chapters" },
+          { id: "profile"  as Tab, label: "Profile"  },
+        ] as const).map(({ id, label }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className="px-4 py-2 rounded-full text-sm transition-all"
             style={{
-              color: activeTab === id ? "#FFB7CE" : "#B19CD9",
-              border: activeTab === id ? "1.5px solid #FFB7CE" : "1.5px solid transparent",
-            }}>
-            <Icon className="w-4 h-4" />{label}
+              fontFamily: "var(--font-display)",
+              fontWeight: activeTab === id ? 700 : 500,
+              letterSpacing: "0.06em",
+              color: activeTab === id ? "#FFB7CE" : "#7c6a96",
+              border: activeTab === id ? "1px solid rgba(255,183,206,0.4)" : "1px solid transparent",
+              backgroundColor: activeTab === id ? "rgba(255,183,206,0.08)" : "transparent",
+            }}
+          >
+            {label}
           </button>
         ))}
       </div>
@@ -143,49 +181,39 @@ function CharacterSprite({ name }: { name: string }) {
 }
 
 /* ══════════════════════════════════════════
-   RADAR CHART (SVG, no library needed)
+   RADAR CHART
 ══════════════════════════════════════════ */
 function RadarChart({ data }: { data: Record<string, number> }) {
   const labels = ["Logic", "Emotion", "Risk", "Caution", "Independence", "Collaboration"];
   const keys   = ["logic", "emotion", "risk", "caution", "independence", "collaboration"];
   const cx = 130, cy = 130, r = 90;
   const n = labels.length;
-
   const angleOf = (i: number) => (Math.PI * 2 * i) / n - Math.PI / 2;
-
   const pointAt = (i: number, val: number) => {
     const a = angleOf(i);
     const pct = val / 100;
     return { x: cx + r * pct * Math.cos(a), y: cy + r * pct * Math.sin(a) };
   };
-
   const dataPoints = keys.map((k, i) => pointAt(i, data[k] || 0));
   const polyPoints = dataPoints.map(p => `${p.x},${p.y}`).join(" ");
 
   return (
     <svg viewBox="0 0 260 260" className="w-full max-w-xs mx-auto">
-      {/* Grid rings */}
       {[25, 50, 75, 100].map(pct => {
         const pts = Array.from({ length: n }, (_, i) => pointAt(i, pct));
-        return <polygon key={pct} points={pts.map(p => `${p.x},${p.y}`).join(" ")}
-          fill="none" stroke="rgba(160,233,255,0.12)" strokeWidth="1" />;
+        return <polygon key={pct} points={pts.map(p => `${p.x},${p.y}`).join(" ")} fill="none" stroke="rgba(160,233,255,0.12)" strokeWidth="1" />;
       })}
-      {/* Axes */}
       {Array.from({ length: n }, (_, i) => {
         const end = pointAt(i, 100);
         return <line key={i} x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="rgba(160,233,255,0.18)" strokeWidth="1" />;
       })}
-      {/* Data polygon */}
       <polygon points={polyPoints} fill="rgba(160,233,255,0.15)" stroke="#A0E9FF" strokeWidth="2" />
-      {/* Data dots */}
       {dataPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="4" fill="#A0E9FF" />)}
-      {/* Labels */}
       {labels.map((label, i) => {
         const a = angleOf(i);
         const lx = cx + (r + 18) * Math.cos(a);
         const ly = cy + (r + 18) * Math.sin(a);
-        return <text key={i} x={lx} y={ly} textAnchor="middle" dominantBaseline="middle"
-          fontSize="9" fill="#B19CD9" fontWeight="600">{label}</text>;
+        return <text key={i} x={lx} y={ly} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="#B19CD9" fontWeight="600">{label}</text>;
       })}
     </svg>
   );
@@ -210,14 +238,18 @@ function TraitBar({ label, value, color }: { label: string; value: number; color
 /* ══════════════════════════════════════════
    CHAPTERS TAB
 ══════════════════════════════════════════ */
-function ChaptersTab({ characterName, xp, completedThemes, onStartChapter }:
-  { characterName: string; xp: number; completedThemes: string[]; onStartChapter: (id: string) => void }) {
-
-  const level = Math.floor(xp / 150) + 1;
+function ChaptersTab({ characterName, xp, completedThemes, onStartChapter }: {
+  characterName: string;
+  xp: number;
+  completedThemes: string[];
+  onStartChapter: (id: string) => void;
+}) {
+  const level   = Math.floor(xp / 150) + 1;
   const levelXp = xp % 150;
 
   return (
     <div className="min-h-screen pt-20 px-6 pb-10" style={{ background: BG }}>
+      <GlowDotCursor />
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center space-y-1 pt-4">
           <h1 className="text-4xl font-black" style={{ color: "#A0E9FF", fontFamily: "Georgia, serif" }}>
@@ -226,7 +258,6 @@ function ChaptersTab({ characterName, xp, completedThemes, onStartChapter }:
           <p style={{ color: "#B19CD9" }}>Choose your next chapter</p>
         </div>
 
-        {/* XP bar */}
         <div className="flex items-center gap-4 px-6 py-4 rounded-2xl"
           style={{ backgroundColor: "rgba(45,31,63,0.5)", border: "1px solid rgba(160,233,255,0.2)" }}>
           <Star className="w-5 h-5 flex-shrink-0" style={{ color: "#FFD700" }} fill="#FFD700" />
@@ -236,48 +267,72 @@ function ChaptersTab({ characterName, xp, completedThemes, onStartChapter }:
               <span>Level {level} &nbsp;<span style={{ color: "#A0E9FF" }}>{levelXp} / 150</span></span>
             </div>
             <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-              <div className="h-full rounded-full transition-all" style={{ width: `${(levelXp / 150) * 100}%`, background: "linear-gradient(to right, #A0E9FF, #FFB7CE)" }} />
+              <div className="h-full rounded-full transition-all"
+                style={{ width: `${(levelXp / 150) * 100}%`, background: "linear-gradient(to right, #A0E9FF, #FFB7CE)" }} />
             </div>
           </div>
         </div>
 
-        {/* Chapter cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {themes.map(({ id, title, subtitle, description, Icon, chapter }) => {
-            const done = completedThemes.includes(id);
+            const done  = completedThemes.includes(id);
             const color = themeColors[id];
             return (
-              <div key={id} className="rounded-2xl overflow-hidden" style={{ backgroundColor: "rgba(20,12,35,0.8)", border: `1.5px solid ${color}33` }}>
-                {/* Card header gradient */}
-                <div className="h-28 flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${color}33, ${color}18)` }}>
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: `${color}22`, border: `2px solid ${color}55` }}>
-                    <Icon className="w-7 h-7" style={{ color }} />
-                  </div>
-                </div>
-                <div className="p-5 space-y-3">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color }}>Chapter {chapter}</p>
-                    <h3 className="text-xl font-black" style={{ color: "#f0e8ff" }}>{title}</h3>
-                    <p className="text-xs mt-1" style={{ color: "#B19CD9" }}>7 episodes · 150 XP</p>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs" style={{ color: "#7c6a96" }}>
-                      <span>Progress</span><span>{done ? "7/7" : "0/7"}</span>
+              <FlipCard key={id} color={color}
+                front={
+                  <div className="w-full h-full flex flex-col">
+                    <div className="h-36 flex items-center justify-center flex-shrink-0"
+                      style={{ background: `linear-gradient(135deg, ${color}44, ${color}18)` }}>
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: `${color}22`, border: `2px solid ${color}66` }}>
+                        <Icon className="w-8 h-8" style={{ color }} />
+                      </div>
                     </div>
-                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
-                      <div className="h-full rounded-full" style={{ width: done ? "100%" : "0%", background: color }} />
+                    <div className="flex-1 p-5 flex flex-col justify-between">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color }}>Chapter {chapter}</p>
+                        <h3 className="text-xl font-black" style={{ color: "#f0e8ff" }}>{title}</h3>
+                        <p className="text-xs mt-1" style={{ color: "#B19CD9" }}>7 episodes · 150 XP</p>
+                      </div>
+                      <div className="space-y-1 mt-3">
+                        <div className="flex justify-between text-xs" style={{ color: "#7c6a96" }}>
+                          <span>Progress</span><span>{done ? "7/7" : "0/7"}</span>
+                        </div>
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
+                          <div className="h-full rounded-full" style={{ width: done ? "100%" : "0%", background: color }} />
+                        </div>
+                      </div>
+                      <p className="text-xs mt-3 italic" style={{ color: "#4a3f5c" }}>Hover to learn more →</p>
                     </div>
                   </div>
-                  <button onClick={() => onStartChapter(id)} disabled={done}
-                    className="w-full py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
-                    style={{ background: done ? "rgba(255,255,255,0.06)" : color, color: done ? "#7c6a96" : "#0a0612" }}>
-                    {done ? "✓ Completed" : "Start Chapter"}
-                  </button>
-                </div>
-              </div>
+                }
+                back={
+                  <div className="flex flex-col h-full justify-between">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color }}>{subtitle}</p>
+                      <h3 className="text-2xl font-black mb-3" style={{ color: "#f0e8ff" }}>{title}</h3>
+                      <p className="text-sm leading-relaxed border-t pt-3" style={{ color: "#c4b5d4", borderColor: `${color}44` }}>{description}</p>
+                      <div className="mt-4 flex items-center gap-2 flex-wrap">
+                        <span className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: `${color}22`, color, border: `1px solid ${color}44` }}>7 episodes</span>
+                        <span className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(255,183,206,0.12)", color: "#FFB7CE", border: "1px solid rgba(255,183,206,0.3)" }}>150 XP</span>
+                        {done && <span className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(52,211,153,0.15)", color: "#34d399", border: "1px solid rgba(52,211,153,0.3)" }}>✓ Done</span>}
+                      </div>
+                    </div>
+                    <button onClick={() => onStartChapter(id)} disabled={done}
+                      className="w-full py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed mt-4"
+                      style={{ background: done ? "rgba(255,255,255,0.06)" : color, color: done ? "#7c6a96" : "#0a0612" }}>
+                      {done ? "✓ Completed" : "Start Chapter"}
+                    </button>
+                  </div>
+                }
+              />
             );
           })}
         </div>
+
+        <p className="text-center text-xs pb-4" style={{ color: "#4a3f5c" }}>
+          Your choices shape your journey and unlock deeper insights
+        </p>
       </div>
     </div>
   );
@@ -286,13 +341,14 @@ function ChaptersTab({ characterName, xp, completedThemes, onStartChapter }:
 /* ══════════════════════════════════════════
    PROFILE TAB
 ══════════════════════════════════════════ */
-function ProfileTab({ characterName, xp, traits, profile, isLoading }:
-  { characterName: string; xp: number; traits: string[]; profile: ProfileData | null; isLoading: boolean }) {
-
+function ProfileTab({ characterName, xp, traits, profile, isLoading }: {
+  characterName: string; xp: number; traits: string[]; profile: ProfileData | null; isLoading: boolean
+}) {
   const [activeSection, setActiveSection] = useState<"profile" | "reflection">("profile");
 
   if (!characterName) return (
     <div className="min-h-screen pt-20 flex items-center justify-center" style={{ background: BG }}>
+      <GlowDotCursor />
       <div className="text-center space-y-4 px-8">
         <div className="text-6xl">🎮</div>
         <h2 className="text-2xl font-black" style={{ color: "#A0E9FF" }}>Play a story first!</h2>
@@ -303,11 +359,11 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
 
   return (
     <div className="min-h-screen pt-16" style={{ background: BG }}>
+      <GlowDotCursor />
       <div className="flex">
-        {/* Sidebar */}
         <div className="w-56 flex-shrink-0 p-4 pt-6 space-y-2 sticky top-16 h-screen">
           {([
-            { id: "profile" as const,    label: "Profile",    Icon: User },
+            { id: "profile"    as const, label: "Profile",    Icon: User },
             { id: "reflection" as const, label: "Reflection", Icon: TrendingUp },
           ]).map(({ id, label, Icon }) => (
             <button key={id} onClick={() => setActiveSection(id)}
@@ -322,7 +378,6 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
           ))}
         </div>
 
-        {/* Main content */}
         <div className="flex-1 px-6 py-6 overflow-y-auto space-y-6">
           {isLoading ? (
             <div className="flex flex-col items-center gap-4 pt-20">
@@ -335,23 +390,17 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
                 <>
                   <h1 className="text-4xl font-black text-center" style={{ color: "#A0E9FF" }}>YOUR PROFILE</h1>
                   <p className="text-center text-sm" style={{ color: "#B19CD9" }}>A psychological portrait based on your narrative choices</p>
-
-                  {/* Archetype card */}
                   <div className="p-6 rounded-2xl space-y-4" style={{ backgroundColor: "rgba(45,31,63,0.6)", border: "1.5px solid rgba(160,233,255,0.25)" }}>
                     <div className="flex items-start gap-5">
                       <div className="w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0 text-4xl"
-                        style={{ background: "linear-gradient(135deg, rgba(160,233,255,0.2), rgba(255,183,206,0.2))", border: "2px solid rgba(160,233,255,0.3)" }}>
-                        🧠
-                      </div>
+                        style={{ background: "linear-gradient(135deg, rgba(160,233,255,0.2), rgba(255,183,206,0.2))", border: "2px solid rgba(160,233,255,0.3)" }}>🧠</div>
                       <div className="flex-1">
                         <h2 className="text-2xl font-black" style={{ color: "#A0E9FF" }}>{profile.archetype.name}</h2>
                         <p className="text-xs mt-0.5 mb-3" style={{ color: "#7c6a96" }}>Archetype determined by {traits.length} narrative decisions</p>
-                        <div className="flex gap-2 flex-wrap mb-3">
-                          <div className="flex gap-4 text-center">
-                            <div><p className="text-2xl font-black" style={{ color: "#FFB7CE" }}>1</p><p className="text-xs" style={{ color: "#7c6a96" }}>Stories</p></div>
-                            <div><p className="text-2xl font-black" style={{ color: "#FFB7CE" }}>{traits.length}</p><p className="text-xs" style={{ color: "#7c6a96" }}>Choices</p></div>
-                            <div><p className="text-2xl font-black" style={{ color: "#FFB7CE" }}>{xp}</p><p className="text-xs" style={{ color: "#7c6a96" }}>XP</p></div>
-                          </div>
+                        <div className="flex gap-4 text-center mb-3">
+                          <div><p className="text-2xl font-black" style={{ color: "#FFB7CE" }}>1</p><p className="text-xs" style={{ color: "#7c6a96" }}>Stories</p></div>
+                          <div><p className="text-2xl font-black" style={{ color: "#FFB7CE" }}>{traits.length}</p><p className="text-xs" style={{ color: "#7c6a96" }}>Choices</p></div>
+                          <div><p className="text-2xl font-black" style={{ color: "#FFB7CE" }}>{xp}</p><p className="text-xs" style={{ color: "#7c6a96" }}>XP</p></div>
                         </div>
                         <div className="flex gap-2 flex-wrap">
                           {profile.topTraits.map((t: string) => (
@@ -364,7 +413,6 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
                     <p className="text-sm leading-relaxed" style={{ color: "#c4b5d4" }}>{profile.archetype.description}</p>
                   </div>
 
-                  {/* Radar chart */}
                   <div className="p-6 rounded-2xl" style={{ backgroundColor: "rgba(45,31,63,0.5)", border: "1.5px solid rgba(160,233,255,0.15)" }}>
                     <h3 className="text-lg font-black mb-4 flex items-center gap-2" style={{ color: "#A0E9FF" }}>
                       <TrendingUp className="w-5 h-5" /> Trait Overview
@@ -372,7 +420,6 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
                     <RadarChart data={profile.decisionStyle} />
                   </div>
 
-                  {/* Decision trait bars */}
                   <div className="p-6 rounded-2xl space-y-5" style={{ backgroundColor: "rgba(45,31,63,0.5)", border: "1.5px solid rgba(160,233,255,0.15)" }}>
                     <h3 className="text-lg font-black" style={{ color: "#A0E9FF" }}>Decision Traits</h3>
                     <div className="space-y-4">
@@ -388,8 +435,8 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
                       </div>
                       <div className="p-4 rounded-xl space-y-3" style={{ backgroundColor: "rgba(10,6,18,0.4)", border: "1px solid rgba(160,233,255,0.1)" }}>
                         <p className="text-sm font-bold" style={{ color: "#f0e8ff" }}>🤝 Independence vs. Collaboration</p>
-                        <TraitBar label="Independence"   value={profile.decisionStyle.independence}   color="#38bdf8" />
-                        <TraitBar label="Collaboration"  value={profile.decisionStyle.collaboration}  color="#f472b6" />
+                        <TraitBar label="Independence"  value={profile.decisionStyle.independence}  color="#38bdf8" />
+                        <TraitBar label="Collaboration" value={profile.decisionStyle.collaboration} color="#f472b6" />
                       </div>
                     </div>
                   </div>
@@ -400,8 +447,6 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
                 <>
                   <h1 className="text-4xl font-black text-center" style={{ color: "#A0E9FF" }}>YOUR REFLECTION</h1>
                   <p className="text-center text-sm" style={{ color: "#B19CD9" }}>What your story choices reveal about you</p>
-
-                  {/* Main analysis */}
                   <div className="relative p-8 rounded-3xl" style={{ backgroundColor: "rgba(45,31,63,0.6)", border: "2px solid rgba(160,233,255,0.25)" }}>
                     <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 rounded-tl-3xl" style={{ borderColor: "#A0E9FF" }} />
                     <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 rounded-tr-3xl" style={{ borderColor: "#FFB7CE" }} />
@@ -409,17 +454,13 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
                     <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 rounded-br-3xl" style={{ borderColor: "#A0E9FF" }} />
                     <p className="text-lg leading-relaxed font-serif italic" style={{ color: "#f0e8ff" }}>{profile.analysis}</p>
                   </div>
-
-                  {/* About archetype */}
                   <div className="p-6 rounded-2xl space-y-3" style={{ backgroundColor: "rgba(45,31,63,0.5)", border: "1.5px solid rgba(160,233,255,0.15)" }}>
                     <h3 className="text-xl font-black" style={{ color: "#A0E9FF" }}>About Your Archetype</h3>
-                    <p className="text-sm leading-relaxed" style={{ color: "#A0E9FF" }}>
-                      <span className="font-bold">{profile.archetype.name}</span>
+                    <p className="text-sm leading-relaxed">
+                      <span className="font-bold" style={{ color: "#A0E9FF" }}>{profile.archetype.name}</span>
                       <span style={{ color: "#c4b5d4" }}> — {profile.archetype.description}</span>
                     </p>
                   </div>
-
-                  {/* Insight card */}
                   <div className="p-6 rounded-2xl text-center" style={{ backgroundColor: "rgba(255,183,206,0.08)", border: "1.5px solid rgba(255,183,206,0.3)" }}>
                     <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "#FFB7CE" }}>Core Insight</p>
                     <p className="text-xl font-bold italic" style={{ color: "#f0e8ff" }}>"{profile.insight}"</p>
@@ -443,28 +484,26 @@ function ProfileTab({ characterName, xp, traits, profile, isLoading }:
    MAIN APP
 ══════════════════════════════════════════ */
 export default function Home() {
-  const [tab, setTab]                   = useState<Tab>("home");
-  const [screen, setScreen]             = useState<Screen>("welcome");
-  const [nameInput, setNameInput]       = useState("");
+  const [tab, setTab]                     = useState<Tab>("home");
+  const [screen, setScreen]               = useState<Screen>("welcome");
+  const [nameInput, setNameInput]         = useState("");
   const [characterName, setCharacterName] = useState("");
   const [selectedTheme, setSelectedTheme] = useState("");
-  const [chapterIndex, setChapterIndex] = useState(0);
-  const [traits, setTraits]             = useState<string[]>([]);
+  const [chapterIndex, setChapterIndex]   = useState(0);
+  const [traits, setTraits]               = useState<string[]>([]);
   const [completedThemes, setCompletedThemes] = useState<string[]>([]);
-  const [aiProfile, setAiProfile]       = useState<ProfileData | null>(null);
-  const [isLoading, setIsLoading]       = useState(false);
-  const [xp, setXp]                     = useState(0);
-  const [showXp, setShowXp]             = useState(false);
+  const [aiProfile, setAiProfile]         = useState<ProfileData | null>(null);
+  const [isLoading, setIsLoading]         = useState(false);
+  const [xp, setXp]                       = useState(0);
+  const [showXp, setShowXp]               = useState(false);
   const [displayedText, setDisplayedText] = useState("");
-  const [textDone, setTextDone]         = useState(false);
-  const [showChoices, setShowChoices]   = useState(false);
+  const [textDone, setTextDone]           = useState(false);
+  const [showChoices, setShowChoices]     = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const chapters = storyDataByTheme[selectedTheme] || [];
   const chapter  = chapters[chapterIndex];
-  const progress = chapters.length ? (chapterIndex / chapters.length) * 100 : 0;
 
-  // Typewriter
   useEffect(() => {
     if (screen !== "game" || !chapter) return;
     setDisplayedText(""); setTextDone(false); setShowChoices(false); setIsTransitioning(false);
@@ -510,9 +549,12 @@ export default function Home() {
     }, 500);
   };
 
-  const restart = () => { setScreen("welcome"); setChapterIndex(0); setTraits([]); setXp(0); setNameInput(""); setCharacterName(""); setSelectedTheme(""); setAiProfile(null); };
+  const restart = () => {
+    setScreen("welcome"); setChapterIndex(0); setTraits([]); setXp(0);
+    setNameInput(""); setCharacterName(""); setSelectedTheme(""); setAiProfile(null);
+  };
 
-  // Tab navigation overrides
+  /* ── TAB OVERRIDES ── */
   if (tab === "chapters") return (
     <>
       <Navbar activeTab={tab} setTab={setTab} />
@@ -529,41 +571,44 @@ export default function Home() {
 
   /* ── WELCOME ── */
   if (screen === "welcome") return (
-    <div className="min-h-screen flex flex-col" style={{ background: BG }}>
-      <Navbar activeTab="home" setTab={setTab} />
-      <div className="flex-1 flex items-center justify-center pt-16">
-        <div className="text-center space-y-10 px-8">
-          <div className="space-y-4">
-            <h1 className="text-8xl font-black tracking-widest" style={{ color: "#A0E9FF", fontFamily: "Georgia, serif", textShadow: "0 0 60px rgba(160,233,255,0.4)" }}>LIFE.EXE</h1>
-            <div className="flex items-center justify-center gap-2">
-              <Sparkles className="w-5 h-5" style={{ color: "#FFB7CE" }} />
-              <p className="text-xl tracking-widest uppercase" style={{ color: "#B19CD9" }}>Choose. Play. Reflect</p>
-              <Sparkles className="w-5 h-5" style={{ color: "#FFB7CE" }} />
+    <>
+      <FluidCursor />
+      <Vortex>
+        <Navbar activeTab="home" setTab={setTab} />
+        <div className="flex-1 flex items-center justify-center" style={{ minHeight: "100vh" }}>
+          <div className="flex flex-col items-center justify-center text-center gap-8 px-8" style={{ marginTop: "-60px" }}>
+            <GlitchTitle />
+            <TypewriterCycler />
+            <div className="flex items-center gap-3" style={{ opacity: 0.6 }}>
+              <Sparkles className="w-4 h-4" style={{ color: "#FFB7CE" }} />
+              <p className="text-sm tracking-[0.3em] uppercase" style={{ color: "#B19CD9" }}>Choose. Play. Reflect</p>
+              <Sparkles className="w-4 h-4" style={{ color: "#FFB7CE" }} />
             </div>
+            <PulseButton onClick={() => setScreen("name")}>Start Game</PulseButton>
           </div>
-          <button onClick={() => setScreen("name")} className="px-16 py-5 rounded-full font-bold text-xl transition-transform hover:scale-105"
-            style={{ backgroundColor: "#FFB7CE", color: "#1A1221", boxShadow: "0 0 40px rgba(255,183,206,0.5)" }}>Start Game</button>
         </div>
-      </div>
-    </div>
+      </Vortex>
+    </>
   );
 
   /* ── NAME ── */
   if (screen === "name") return (
     <div className="min-h-screen flex flex-col" style={{ background: BG }}>
+      <GlowDotCursor />
       <Navbar activeTab="home" setTab={setTab} />
       <div className="flex-1 flex items-center justify-center pt-16">
         <div className="w-full max-w-lg px-8 space-y-8">
           <h2 className="text-5xl font-black text-center tracking-widest uppercase" style={{ color: "#A0E9FF" }}>Enter Your Name</h2>
-          <input type="text" value={nameInput} onChange={e => setNameInput(e.target.value)} placeholder="Your character's name..."
+          <input type="text" value={nameInput} onChange={e => setNameInput(e.target.value)}
+            placeholder="Your character's name..."
             onKeyDown={e => { if (e.key === "Enter" && nameInput.trim()) { setCharacterName(nameInput.trim()); setTab("chapters"); }}}
             autoFocus className="w-full px-8 py-5 rounded-2xl text-lg focus:outline-none border-2"
             style={{ backgroundColor: "rgba(45,31,63,0.6)", borderColor: "#FFB7CE", color: "#f5f3ff", boxShadow: "0 0 30px rgba(255,183,206,0.3)" }} />
           <div className="flex gap-4">
             <button onClick={() => setScreen("welcome")} className="flex-1 py-4 rounded-2xl border-2 font-semibold"
               style={{ borderColor: "#B19CD9", color: "#B19CD9", backgroundColor: "rgba(177,156,217,0.1)" }}>Back</button>
-            <button onClick={() => { if (nameInput.trim()) { setCharacterName(nameInput.trim()); setTab("chapters"); }}} disabled={!nameInput.trim()}
-              className="flex-1 py-4 rounded-2xl font-bold transition-all hover:scale-105 disabled:opacity-40"
+            <button onClick={() => { if (nameInput.trim()) { setCharacterName(nameInput.trim()); setTab("chapters"); }}}
+              disabled={!nameInput.trim()} className="flex-1 py-4 rounded-2xl font-bold transition-all hover:scale-105 disabled:opacity-40"
               style={{ backgroundColor: "#FFB7CE", color: "#1A1221" }}>Continue →</button>
           </div>
         </div>
@@ -574,6 +619,7 @@ export default function Home() {
   /* ── ENDING ── */
   if (screen === "ending") return (
     <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: BG }}>
+      <GlowDotCursor />
       <Navbar activeTab="home" setTab={setTab} />
       <div className="absolute top-20 left-20 w-64 h-64 rounded-full opacity-10 blur-3xl" style={{ background: "#A0E9FF" }} />
       <div className="absolute bottom-20 right-20 w-64 h-64 rounded-full opacity-10 blur-3xl" style={{ background: "#FFB7CE" }} />
@@ -615,6 +661,7 @@ export default function Home() {
   if (!chapter) return null;
   return (
     <div className="relative w-full h-screen overflow-hidden" onClick={skipTypewriter} style={{ background: "#0a0612" }}>
+      <GlowDotCursor />
       <Navbar activeTab="home" setTab={setTab} />
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${backgrounds[selectedTheme]})` }} />
       <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0a0612 0%, rgba(10,6,18,0.65) 50%, rgba(10,6,18,0.38) 100%)" }} />
@@ -623,14 +670,14 @@ export default function Home() {
       <div className="absolute top-16 left-0 right-0 z-30 px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center gap-4">
           <div className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap"
-            style={{ backgroundColor: "rgba(10,6,18,0.75)", color: "#A0E9FF", border: "1px solid rgba(160,233,255,0.3)", backdropFilter: "blur(10px)" }}>
-            Episode {chapterIndex + 1}/{chapters.length}
+            style={{ fontFamily: "var(--font-mono)", backgroundColor: "rgba(10,6,18,0.75)", color: "#A0E9FF", border: "1px solid rgba(160,233,255,0.3)", backdropFilter: "blur(10px)" }}>
+            EP {chapterIndex + 1}/{chapters.length}
           </div>
-          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: "linear-gradient(to right, #A0E9FF, #B19CD9, #FFB7CE)" }} />
+          <div className="flex-1">
+            <LifeBar current={chapterIndex + 1} total={chapters.length} label="LIFE PROGRESS" />
           </div>
           <div className="px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 whitespace-nowrap"
-            style={{ backgroundColor: "rgba(10,6,18,0.75)", color: "#FFB7CE", border: "1px solid rgba(255,183,206,0.3)", backdropFilter: "blur(10px)" }}>
+            style={{ fontFamily: "var(--font-mono)", backgroundColor: "rgba(10,6,18,0.75)", color: "#FFB7CE", border: "1px solid rgba(255,183,206,0.3)", backdropFilter: "blur(10px)" }}>
             <Star className="w-3 h-3" fill="currentColor" />{xp} XP
           </div>
         </div>
