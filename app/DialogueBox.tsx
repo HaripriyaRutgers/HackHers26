@@ -1,17 +1,15 @@
 "use client";
 
+import ChoiceButton from "./ChoiceButton"; // Import your animated button
 import { motion } from "framer-motion";
-import ChoiceButton from "./ChoiceButton";
 
-/* ✅ Choice type */
 type Choice = {
   text: string;
-  next?: string;
+  next: string;
 };
 
-/* ✅ Props type */
 type DialogueBoxProps = {
-  characterName?: string;
+  characterName: string;
   dialogue: string;
   choices: Choice[];
   onChoice: (choice: Choice) => void;
@@ -24,27 +22,32 @@ export default function DialogueBox({
   onChoice,
 }: DialogueBoxProps) {
   return (
-    <motion.div
-      className="absolute bottom-0 w-full bg-black/70 backdrop-blur-md text-white p-6 rounded-t-3xl"
-      initial={{ y: 100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      {characterName && (
-        <h2 className="text-lg font-bold mb-2">{characterName}</h2>
-      )}
+    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[90%] max-w-3xl">
+      {/* Dialogue Area */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/90 backdrop-blur-md p-6 rounded-2xl border-4 border-[#4A4A4A] shadow-2xl mb-4"
+      >
+        <h3 className="text-[#4A4A4A] font-bold text-xl mb-2 underline decoration-wavy">
+          {characterName}
+        </h3>
+        <p className="text-gray-800 text-lg leading-relaxed font-medium">
+          {dialogue}
+        </p>
+      </motion.div>
 
-      <p className="text-md mb-4">{dialogue}</p>
-
-      <div className="flex flex-col gap-4">
+      {/* Choices Area */}
+      <div className="flex flex-col gap-3">
         {choices.map((choice, index) => (
           <ChoiceButton
             key={index}
             text={choice.text}
-            onClick={() => onChoice(choice)}
+            // This sends the choice back up through GameScreen to Home
+            onClick={() => onChoice(choice)} 
           />
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
