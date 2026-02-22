@@ -15,6 +15,7 @@ export default function ChoiceButton({
   return (
     <motion.button
       onClick={onClick}
+      
       className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg text-lg font-medium hover:bg-blue-600"
       whileHover={{
         scale: 1.05,
@@ -26,3 +27,4 @@ export default function ChoiceButton({
     </motion.button>
   );
 }
+
